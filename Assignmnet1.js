@@ -5,6 +5,9 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+//p.use(express.json());
+//p.use(express.urlencoded({ extended: true }));
+
 app.use((req, res, next) => {
     const logDetails = {
         timestamp: new Date().toISOString(),
@@ -16,13 +19,23 @@ app.use((req, res, next) => {
     };
 
     const logMessage = JSON.stringify(logDetails) + '\n';
-    const logFilePath = path.join(__dirname, 'logs', 'requests.log');
+
+    const logFilePath = path.join(__dirname, 'requests.log');
     fs.appendFile(logFilePath, logMessage, (err) => {
-        if (err) console.error('Error writing to log file', err);
+        if (err) {
+            console.error('Failed to write to log file:', err);
+        }
     });
 
-    next();
+    next(); 
+});
+app.get('/', (req, res) => {
+    res.send('Welcome to the Express Logger!');
+});
+app.get('/about', (req, res) => {
+    res.send('This is the About page.');
 });
 
-app.get('/', (req, res) => res.send('Welcome to Express Logger!'));
-app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+    console.log("server running");
+});
